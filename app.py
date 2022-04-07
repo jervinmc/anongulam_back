@@ -139,8 +139,11 @@ class Register(Resource):
                 diettype='paleo'
             if(data.get('ispescatarian')=='yes'):
                 diettype='pescatarian'
-            categorizedItem = self.db.query(f"select * from menu_list where diettype='{diettype}'  order by random() limit 5")
+            if(data.get('isany')=='yes'):
+                diettype='any'
+            categorizedItem = self.db.query(f"select * from menu_list where diettype='{diettype}'  order by random() limit 6")
             print(categorizedItem)
+            setWeeklyMeals(id,diettype)
             setWeeklyMeals(id,diettype)
             return Response({"status":"Success"},status=201)
             
@@ -175,6 +178,15 @@ def setWeeklyMeals(id,diettype):
 # scheduler.add_job(func=setWeeklyMealsAll, trigger="interval", seconds=30)
 # scheduler.start()
 
+class UserMeals(Resource):
+    def __init__(self):
+        self.db=Database()
+
+    def get(self,diettype=None,user_id=None):
+        data_fetch = self.db.query(f"SELECT * FROM menu_list where user_id={user_id}")
+        return data_fetch
+
+
 class MenuList(Resource):
     def __init__(self):
         self.db=Database()
@@ -188,7 +200,7 @@ class MenuList(Resource):
             data_fetch = self.db.query(f"SELECT * FROM menu_list where categorytime='{categorytime}' and diettype='{diettype}' ")
         return data_fetch
         
-    def post(self,pk=None,categorytime='',diettype=''):
+    def post(self,pk=None,categorytime='',diettype='',allergy=None):
         data = request.get_json()
         id = self.db.query("select max(id)+1 from menu_list")
         print(id)
@@ -197,7 +209,7 @@ class MenuList(Resource):
         else:
             id=id[0][0]
         try:
-            res = self.db.insert(f"INSERT INTO menu_list values(default,'{data.get('name')}','{data.get('image')}','{data.get('categorytime')}','{data.get('diettype')}','{data.get('foodtype')}')")
+            res = self.db.insert(f"INSERT INTO menu_list values(default,'{data.get('name')}','{data.get('image')}','{data.get('categorytime')}','{data.get('diettype')}','{data.get('foodtype')}',{data.get('user_id')})")
             print(res)
             id = self.db.query("select max(id) from menu_list")
             if(id[0][0]==None):
@@ -210,6 +222,7 @@ class MenuList(Resource):
             for x in data.get('ingredients'):
                 print(x)
                 self.db.insert(f"INSERT INTO ingredients values(default,{id},'{x}',1)")
+
             return {"data":id}
             
             # if(res==[]):
@@ -315,6 +328,9 @@ class Groceries(Resource):
         menu_list = []
         for x in weekly_list:
             menu_list.append(str(x[1]))
+        #for error handling
+        if(menu_list==[]):
+            return ""
         data_ingredients = self.db.query(f"select ingredients_name, sum(quantity) from ingredients where menu_id in ({', '.join(menu_list)}) group by ingredients_name;")
         # for x in weekly_list:
         #     data_ingredients = self.db.query(f"SELECT * FROM ingredients where menu_id={x[1]}")
@@ -486,6 +502,7 @@ api.add_resource(Ingredients,'/api/v1/ingredients/<int:menu_id>')
 api.add_resource(Recommend,'/api/v1/recommend/<int:user_id>/<string:diettype>')
 api.add_resource(Weekly,'/api/v1/weekly/<int:user_id>')
 api.add_resource(Likes,'/api/v1/likes/<int:menu_id>')
+api.add_resource(UserMeals,'/api/v1/user_meals/<int:user_id>')
 api.add_resource(Groceries,'/api/v1/groceries/<int:user_id>')
 api.add_resource(GroceryPantry,'/api/v1/grocerypantry')
 api.add_resource(ResetPassword,'/api/v1/reset_password')
