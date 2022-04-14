@@ -143,8 +143,27 @@ class Register(Resource):
                 diettype='any'
             categorizedItem = self.db.query(f"select * from menu_list where diettype='{diettype}'  order by random() limit 6")
             print(categorizedItem)
-            setWeeklyMeals(id,diettype)
-            setWeeklyMeals(id,diettype)
+            setWeeklyMeals(id,diettype,'breakfast')
+            setWeeklyMeals(id,diettype,'lunch')
+            setWeeklyMeals(id,diettype,'dinner')
+            setWeeklyMeals(id,diettype,'breakfast')
+            setWeeklyMeals(id,diettype,'lunch')
+            setWeeklyMeals(id,diettype,'dinner')
+            setWeeklyMeals(id,diettype,'breakfast')
+            setWeeklyMeals(id,diettype,'lunch')
+            setWeeklyMeals(id,diettype,'dinner')
+            setWeeklyMeals(id,diettype,'breakfast')
+            setWeeklyMeals(id,diettype,'lunch')
+            setWeeklyMeals(id,diettype,'dinner')
+            setWeeklyMeals(id,diettype,'breakfast')
+            setWeeklyMeals(id,diettype,'lunch')
+            setWeeklyMeals(id,diettype,'dinner')
+            setWeeklyMeals(id,diettype,'breakfast')
+            setWeeklyMeals(id,diettype,'lunch')
+            setWeeklyMeals(id,diettype,'dinner')
+            setWeeklyMeals(id,diettype,'breakfast')
+            setWeeklyMeals(id,diettype,'lunch')
+            setWeeklyMeals(id,diettype,'dinner')
             return Response({"status":"Success"},status=201)
             
         except Exception as e:
@@ -156,16 +175,16 @@ def setWeeklyMealsAll():
     db.insert(f"delete from weekly_meals")
     data_users = db.query(f"select * from users")
     for i in data_users:
-        data_fetch = db.query(f"select * from menu_list where diettype='keto'  order by random() limit 5")
+        data_fetch = db.query(f"select * from menu_list where diettype='keto'  order by random() limit 1")
         print(i[0])
         for x in data_fetch:
             # print(x)
             db.insert(f"INSERT INTO weekly_meals values(default,{x[0]},{i[0]})")
     pass
 
-def setWeeklyMeals(id,diettype):
+def setWeeklyMeals(id,diettype,categorytime):
     db=Database()
-    data_fetch = db.query(f"select * from menu_list where diettype='{diettype}'  order by random() limit 5")
+    data_fetch = db.query(f"select * from menu_list where diettype='{diettype}' and categorytime='{categorytime}'  order by random() limit 1")
    
     for x in data_fetch:
         print(x)
@@ -368,6 +387,57 @@ def convertToList(list_data):
 
 
 
+
+
+class Meal(Resource):
+    def __init__(self):
+        self.db=Database()
+
+    def get(self,menu_id=None):
+        listitem = {"menu_id":menu_id,"ingredients":[],"recipes":[]}
+        ingredients_list = self.db.query(f"SELECT * FROM ingredients where menu_id={menu_id}")
+        recipe_list = self.db.query(f"SELECT * FROM recipe where menu_id={menu_id}")
+        for x in ingredients_list:
+            listitem['ingredients'].append(x[2])
+        for x in recipe_list:
+            print("okayyy")
+            listitem['recipes'].append(x[2])
+        return listitem
+
+    def put(self,menu_id=None):
+        data = request.get_json()
+        self.db.insert(f"DELETE from menu_list where id={data.get('id')}")
+        return ''
+
+    def post(self,menu_id=None):
+        data = request.get_json()
+        # id = self.db.query("select max(id)+1 from menu_list")
+        # print(id)
+        # if(id[0][0]==None):
+        #     id=0
+        # else:
+        #     id=id[0][0]
+        try:
+            # res = self.db.insert(f"INSERT INTO menu_list values(default,'{data.get('name')}','{data.get('image')}','{data.get('categorytime')}','{data.get('diettype')}','{data.get('foodtype')}',{data.get('user_id')})")
+            # print(res)
+            # id = self.db.query("select max(id) from menu_list")
+            # if(id[0][0]==None):
+            #     id=0
+            # else:
+            #     id=id[0][0]
+            self.db.insert(f"update menu_list set categorytime='{data.get('categorytime')}',diettype='{data.get('diettype')}' where id={data.get('id')}")
+            self.db.insert(f"DELETE from ingredients where menu_id={data.get('id')}")
+            self.db.insert(f"DELETE from recipe where menu_id={data.get('id')}")
+            for x in data.get('recipe'):
+                print(x)
+                self.db.insert(f"INSERT INTO recipe values(default,{data.get('id')},'{x}')")
+            for x in data.get('ingredients'):
+                print(x)
+                self.db.insert(f"INSERT INTO ingredients values(default,{data.get('id')},'{x}',1)")
+            return ""
+        except:
+            return {""}
+
 class Recipe(Resource):
     def __init__(self):
         self.db=Database()
@@ -503,9 +573,10 @@ api.add_resource(Recommend,'/api/v1/recommend/<int:user_id>/<string:diettype>')
 api.add_resource(Weekly,'/api/v1/weekly/<int:user_id>')
 api.add_resource(Likes,'/api/v1/likes/<int:menu_id>')
 api.add_resource(UserMeals,'/api/v1/user_meals/<int:user_id>')
+api.add_resource(Meal,'/api/v1/meals/<int:menu_id>')
 api.add_resource(Groceries,'/api/v1/groceries/<int:user_id>')
 api.add_resource(GroceryPantry,'/api/v1/grocerypantry')
 api.add_resource(ResetPassword,'/api/v1/reset_password')
 # api.add_resource(UploadTest,'/api/v1/uploadtest')
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0',port="5001")
+    app.run(debug=True,host='0.0.0.0',port="5000")
