@@ -47,7 +47,7 @@ class Usermanagement(Resource):
     def post(self,pk=None):
         data = request.get_json()
         try:
-            self.db.insert(f"INSERT INTO users(email,password) values('{data.get('email')}','{data.get('password')}')")
+            self.db.insert(f"INSERT INTO users(email,password) values('{data.get('email')}','{data.get('password')}','{data.get('fullname')}')")
             return {"status":"success"}
         except Exception as e:
             print(e)
@@ -84,7 +84,7 @@ class Usermanagement(Resource):
     def put(self,pk):
         data = request.get_json()
         try:
-            self.db.insert(f"UPDATE users set email='{data.get('email')}',password='{data.get('password')}' where id={pk}")
+            self.db.insert(f"UPDATE users set email='{data.get('email')}',password='{data.get('password')}',fullname='{data.get('fullname')}' where id={pk}")
             return {"status":"Success"}
         except Exception as e:
             return {"status":"Failed"}
@@ -103,7 +103,7 @@ class Login(Resource):
                 return {"status":400}
             else:
                 print(res[0][0])
-                return {"id":res[0][0],"email":res[0][1],"email":res[0][1],"password":res[0][2],"isketo":res[0][4],"allergy":res[0][9],"ispescatarian":res[0][7],"ispaleo":res[0][6],"isvegetarian":res[0][5],"password":res[0][2],"status":201}
+                return {"id":res[0][0],"email":res[0][1],"email":res[0][1],"password":res[0][2],"isketo":res[0][4],"allergy":res[0][9],"ispescatarian":res[0][7],"ispaleo":res[0][6],"isvegetarian":res[0][5],"password":res[0][2],"fullname":res[0][10],"status":201}
             
         except Exception as e:
             print(e)
@@ -124,7 +124,7 @@ class Register(Resource):
             return {"status":"Failed Input"}
         try:
             id = self.db.query("select max(id)+1 from users")
-            res = self.db.insert(f"INSERT INTO users values(default,'{data.get('email')}','{data.get('password')}','{data.get('isany')}','{data.get('isketo')}','{data.get('isvegetarian')}','{data.get('ispaleo')}','{data.get('ispescatarian')}','','{data.get('allergy')}')")
+            res = self.db.insert(f"INSERT INTO users values(default,'{data.get('email')}','{data.get('password')}','{data.get('isany')}','{data.get('isketo')}','{data.get('isvegetarian')}','{data.get('ispaleo')}','{data.get('ispescatarian')}','','{data.get('allergy')}','{data.get('fullname')}')")
             id = self.db.query("select max(id) from users")
             if(id[0][0]==None):
                 id=0
@@ -299,6 +299,18 @@ class Likes(Resource):
     def post(self,menu_id=None):
         res = request.get_json()
         data_fetch = self.db.insert(f"INSERT INTO likes values(default,'{res.get('menu_id')}',{res.get('user_id')})")
+        return
+    
+    def put(self,menu_id=None):
+        res = request.get_json()
+        print(res)
+        s = self.db.query(f"select * from likes where menu_id={res.get('menu_id')} and user_id={res.get('user_id')}")
+        print(len(s))
+        if(len(s)>0):
+            return True
+        else:
+            return False
+        # data_fetch = self.db.insert(f"INSERT INTO likes values(default,'{res.get('menu_id')}',{res.get('user_id')})")
         return
 
 class Weekly(Resource):
