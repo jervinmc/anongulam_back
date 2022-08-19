@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.9-slim
 
 ENV PYTHONUNBUFFERED 1
 
@@ -10,7 +10,7 @@ COPY . /app
 
 RUN pip3 --no-cache-dir install -r requirements.txt                                                                            
 
-EXPOSE 5000
+EXPOSE 5001
 
 ENTRYPOINT  ["python3"]
 

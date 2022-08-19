@@ -341,7 +341,7 @@ class GroceryPantry(Resource):
         res = request.get_json()
         for x in res['listitem']:
             data = self.db.query(f"select * from pantry where name='{x['name']}' and user_id={res['user_id']}")
-            if(len(data)==0):
+            if(len(data)==0 and x['quantity']!=None):
                 data_fetch = self.db.insert(f"INSERT INTO pantry values(default,'{x['name']}',{res['user_id']},{x['quantity']})")
             else:
                 data_fetch = self.db.insert(f"UPDATE pantry set quantity=quantity+1 where user_id={res['user_id']} and name='{x['name']}'" )
