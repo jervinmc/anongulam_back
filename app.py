@@ -84,7 +84,17 @@ class Usermanagement(Resource):
     def put(self,pk):
         data = request.get_json()
         try:
-            self.db.insert(f"UPDATE users set email='{data.get('email')}',password='{data.get('password')}',fullname='{data.get('fullname')}' where id={pk}")
+            if(data.get('category')=='keto'):
+                self.db.insert(f"UPDATE users set isany='no',isketo='yes',isvegetarian='no',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+            if(data.get('category')=='any'):
+                self.db.insert(f"UPDATE users set isany='yes',isketo='no',isvegetarian='no',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+            if(data.get('category')=='paleo'):
+                self.db.insert(f"UPDATE users set isany='no',isketo='no',isvegetarian='no',ispaleo='yes',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+            if(data.get('category')=='vegetarian'):
+                self.db.insert(f"UPDATE users set isany='no',isketo='no',isvegetarian='yes',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+            if(data.get('category')=='pescatarian'):
+                self.db.insert(f"UPDATE users set isany='no',isketo='no',isvegetarian='no',ispaleo='no',ispescatarian='yes',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+            
             return {"status":"Success"}
         except Exception as e:
             return {"status":"Failed"}
@@ -124,8 +134,8 @@ class Register(Resource):
             return {"status":"Failed Input"}
         try:
             id = self.db.query("select max(id)+1 from users")
-            res = self.db.insert(f"INSERT INTO users values(default,'{data.get('email')}','{data.get('password')}','{data.get('isany')}','{data.get('isketo')}','{data.get('isvegetarian')}','{data.get('ispaleo')}','{data.get('ispescatarian')}','','{data.get('allergy')}','{data.get('fullname')}')")
-            id = self.db.query("select max(id) from users")
+            res = self.db.insert(f"""INSERT INTO users values(default,'{data.get('email')}','{data.get('password')}','{data.get('isany')}','{data.get('isketo')}','{data.get('isvegetarian')}','{data.get('ispaleo')}','{data.get('ispescatarian')}','','{str(data.get('allergy')).replace('[','').replace(']','').replace("'",'')}','{data.get('fullname')}')""")
+            id = self.db.query("select max(id) from users""")
             if(id[0][0]==None):
                 id=0
             else:
@@ -217,6 +227,7 @@ class MenuList(Resource):
             print(data_fetch)
         else:
             data_fetch = self.db.query(f"SELECT * FROM menu_list where categorytime='{categorytime}' and diettype='{diettype}' ")
+            print(data_fetch)
         return data_fetch
         
     def post(self,pk=None,categorytime='',diettype='',allergy=None):
@@ -228,7 +239,7 @@ class MenuList(Resource):
         else:
             id=id[0][0]
         try:
-            res = self.db.insert(f"INSERT INTO menu_list values(default,'{data.get('name')}','{data.get('image')}','{data.get('categorytime')}','{data.get('diettype')}','{data.get('foodtype')}',{data.get('user_id')})")
+            res = self.db.insert(f"INSERT INTO menu_list values(default,'{data.get('name')}','{data.get('image')}','{data.get('categorytime')}','{data.get('diettype')}','{data.get('foodtype')}',{data.get('user_id')},'{data.get('calories')}')")
             print(res)
             id = self.db.query("select max(id) from menu_list")
             if(id[0][0]==None):
@@ -591,4 +602,5 @@ api.add_resource(GroceryPantry,'/api/v1/grocerypantry')
 api.add_resource(ResetPassword,'/api/v1/reset_password')
 # api.add_resource(UploadTest,'/api/v1/uploadtest')
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0',port="5000")
+    # app.run(debug=True,host='0.0.0.0',port="5000")
+    app.run(debug=True,host='localhost',port="5001")
