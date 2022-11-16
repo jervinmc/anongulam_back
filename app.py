@@ -602,5 +602,5 @@ api.add_resource(GroceryPantry,'/api/v1/grocerypantry')
 api.add_resource(ResetPassword,'/api/v1/reset_password')
 # api.add_resource(UploadTest,'/api/v1/uploadtest')
 if __name__ == "__main__":
-    # app.run(debug=True,host='0.0.0.0',port="5000")
-    app.run(debug=True,host='localhost',port="5001")
+    app.run(debug=True,host='0.0.0.0',port="5000")
+    # app.run(debug=True,host='localhost',port="5001")
