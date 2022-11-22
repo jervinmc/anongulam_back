@@ -85,15 +85,15 @@ class Usermanagement(Resource):
         data = request.get_json()
         try:
             if(data.get('category')=='keto'):
-                self.db.insert(f"UPDATE users set isany='no',isketo='yes',isvegetarian='no',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+                self.db.insert(f"UPDATE users set allergy='{data.get('allergy')}',isany='no',isketo='yes',isvegetarian='no',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             if(data.get('category')=='any'):
-                self.db.insert(f"UPDATE users set isany='yes',isketo='no',isvegetarian='no',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+                self.db.insert(f"UPDATE users set allergy='{data.get('allergy')}',isany='yes',isketo='no',isvegetarian='no',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             if(data.get('category')=='paleo'):
-                self.db.insert(f"UPDATE users set isany='no',isketo='no',isvegetarian='no',ispaleo='yes',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+                self.db.insert(f"UPDATE users set allergy='{data.get('allergy')}',isany='no',isketo='no',isvegetarian='no',ispaleo='yes',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             if(data.get('category')=='vegetarian'):
-                self.db.insert(f"UPDATE users set isany='no',isketo='no',isvegetarian='yes',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+                self.db.insert(f"UPDATE users set allergy='{data.get('allergy')}',isany='no',isketo='no',isvegetarian='yes',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             if(data.get('category')=='pescatarian'):
-                self.db.insert(f"UPDATE users set isany='no',isketo='no',isvegetarian='no',ispaleo='no',ispescatarian='yes',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+                self.db.insert(f"UPDATE users set allergy='{data.get('allergy')}',isany='no',isketo='no',isvegetarian='no',ispaleo='no',ispescatarian='yes',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             
             return {"status":"Success"}
         except Exception as e:
@@ -134,7 +134,7 @@ class Register(Resource):
             return {"status":"Failed Input"}
         try:
             id = self.db.query("select max(id)+1 from users")
-            res = self.db.insert(f"""INSERT INTO users values(default,'{data.get('email')}','{data.get('password')}','{data.get('isany')}','{data.get('isketo')}','{data.get('isvegetarian')}','{data.get('ispaleo')}','{data.get('ispescatarian')}','','{str(data.get('allergy')).replace('[','').replace(']','').replace("'",'')}','{data.get('fullname')}')""")
+            res = self.db.insert(f"""INSERT INTO users values(default,'{data.get('email')}','{data.get('password')}','{data.get('isany')}','{data.get('isketo')}','{data.get('isvegetarian')}','{data.get('ispaleo')}','{data.get('ispescatarian')}','','{str(data.get('allergy')).replace('[','').replace(']','').replace("'",'')}','{data.get('fullname')}','{data.get('isnopork')}')""")
             id = self.db.query("select max(id) from users""")
             if(id[0][0]==None):
                 id=0
@@ -149,6 +149,8 @@ class Register(Resource):
                 diettype='paleo'
             if(data.get('ispescatarian')=='yes'):
                 diettype='pescatarian'
+            if(data.get('isnopork')=='yes'):
+                diettype='isnopork'
             if(data.get('isany')=='yes'):
                 diettype='any'
             categorizedItem = self.db.query(f"select * from menu_list where diettype='{diettype}'  order by random() limit 6")
@@ -249,13 +251,14 @@ class MenuList(Resource):
             for x in data.get('recipe'):
                 print(x)
                 self.db.insert(f"INSERT INTO recipe values(default,{id},'{x}')")
+            counter = 0
             for x in data.get('ingredients'):
-                print(x)
-                self.db.insert(f"INSERT INTO ingredients values(default,{id},'{x}',1)")
+                self.db.insert(f"INSERT INTO ingredients values(default,{id},'{x}',1,'{data.get('sizelabel')[counter]}')")
+                counter= +1
 
             return {"data":id}
             
-            # if(res==[]):
+            # if(res==[]):  
             #     print(res)
             #     return Response({"status":"Wrong Credentials"},status=404)
             # else:
@@ -271,7 +274,6 @@ class MenuList(Resource):
         except Exception as e:
             print(e)
             return {"status":f"{e}"}
-        
 
 
 class Ingredients(Resource):
