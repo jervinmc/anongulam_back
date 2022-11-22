@@ -85,16 +85,17 @@ class Usermanagement(Resource):
         data = request.get_json()
         try:
             if(data.get('category')=='keto'):
-                self.db.insert(f"UPDATE users set allergy='{data.get('allergy')}',isany='no',isketo='yes',isvegetarian='no',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+                self.db.insert(f"UPDATE users set health_condition='{data.get('health_condition')}',isany='no',isketo='yes',isvegetarian='no',isnopork='no',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             if(data.get('category')=='any'):
-                self.db.insert(f"UPDATE users set allergy='{data.get('allergy')}',isany='yes',isketo='no',isvegetarian='no',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+                self.db.insert(f"UPDATE users set health_condition='{data.get('health_condition')}',isany='yes',isketo='no',isvegetarian='no',isnopork='no',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             if(data.get('category')=='paleo'):
-                self.db.insert(f"UPDATE users set allergy='{data.get('allergy')}',isany='no',isketo='no',isvegetarian='no',ispaleo='yes',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+                self.db.insert(f"UPDATE users set health_condition='{data.get('health_condition')}',isany='no',isketo='no',isvegetarian='no',ispaleo='yes',isnopork='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             if(data.get('category')=='vegetarian'):
-                self.db.insert(f"UPDATE users set allergy='{data.get('allergy')}',isany='no',isketo='no',isvegetarian='yes',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+                self.db.insert(f"UPDATE users set health_condition='{data.get('health_condition')}',isany='no',isketo='no',isvegetarian='yes',isnopork='no',ispaleo='no',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             if(data.get('category')=='pescatarian'):
-                self.db.insert(f"UPDATE users set allergy='{data.get('allergy')}',isany='no',isketo='no',isvegetarian='no',ispaleo='no',ispescatarian='yes',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
-            
+                self.db.insert(f"UPDATE users set health_condition='{data.get('health_condition')}',isany='no',isketo='no',isvegetarian='no',ispaleo='no',ispescatarian='yes',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+            if(data.get('category')=='no pork'):
+                self.db.insert(f"UPDATE users set health_condition='{data.get('health_condition')}',isany='no',isketo='no',isvegetarian='no',ispaleo='no',isnopork='yes',ispescatarian='yes',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             return {"status":"Success"}
         except Exception as e:
             return {"status":"Failed"}
@@ -113,7 +114,7 @@ class Login(Resource):
                 return {"status":400}
             else:
                 print(res[0][0])
-                return {"id":res[0][0],"email":res[0][1],"email":res[0][1],"password":res[0][2],"isketo":res[0][4],"allergy":res[0][9],"ispescatarian":res[0][7],"ispaleo":res[0][6],"isvegetarian":res[0][5],"password":res[0][2],"fullname":res[0][10],"status":201}
+                return {"id":res[0][0],"email":res[0][1],"email":res[0][1],"password":res[0][2],"isketo":res[0][4],"allergy":res[0][9],"ispescatarian":res[0][7],"ispaleo":res[0][6],"isvegetarian":res[0][5],"password":res[0][2],"fullname":res[0][10],"health_condition":res[0][8],"status":201}
             
         except Exception as e:
             print(e)
@@ -134,7 +135,7 @@ class Register(Resource):
             return {"status":"Failed Input"}
         try:
             id = self.db.query("select max(id)+1 from users")
-            res = self.db.insert(f"""INSERT INTO users values(default,'{data.get('email')}','{data.get('password')}','{data.get('isany')}','{data.get('isketo')}','{data.get('isvegetarian')}','{data.get('ispaleo')}','{data.get('ispescatarian')}','','{str(data.get('allergy')).replace('[','').replace(']','').replace("'",'')}','{data.get('fullname')}','{data.get('isnopork')}')""")
+            res = self.db.insert(f"""INSERT INTO users values(default,'{data.get('email')}','{data.get('password')}','{data.get('isany')}','{data.get('isketo')}','{data.get('isvegetarian')}','{data.get('ispaleo')}','{data.get('ispescatarian')}','{data.get('health_condition')}','{str(data.get('allergy')).replace('[','').replace(']','').replace("'",'')}','{data.get('fullname')}','{data.get('isnopork')}')""")
             id = self.db.query("select max(id) from users""")
             if(id[0][0]==None):
                 id=0
