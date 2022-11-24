@@ -114,7 +114,7 @@ class Login(Resource):
                 return {"status":400}
             else:
                 print(res[0][0])
-                return {"id":res[0][0],"email":res[0][1],"email":res[0][1],"password":res[0][2],"isketo":res[0][4],"allergy":res[0][9],"ispescatarian":res[0][7],"ispaleo":res[0][6],"isvegetarian":res[0][5],"password":res[0][2],"fullname":res[0][10],"health_condition":res[0][8],"status":201}
+                return {"id":res[0][0],"email":res[0][1],"email":res[0][1],"password":res[0][2],"isketo":res[0][4],"allergy":res[0][9],"ispescatarian":res[0][7],"ispaleo":res[0][6],"isvegetarian":res[0][5],"password":res[0][2],"fullname":res[0][10],"health_condition":res[0][8],"isnopork":res[0][11],"status":201}
             
         except Exception as e:
             print(e)
@@ -151,7 +151,7 @@ class Register(Resource):
             if(data.get('ispescatarian')=='yes'):
                 diettype='pescatarian'
             if(data.get('isnopork')=='yes'):
-                diettype='isnopork'
+                diettype='no pork'
             if(data.get('isany')=='yes'):
                 diettype='any'
             categorizedItem = self.db.query(f"select * from menu_list where diettype='{diettype}'  order by random() limit 6")
@@ -365,6 +365,7 @@ class Groceries(Resource):
     def __init__(self):
         self.db=Database()
     def get(self,user_id=None):
+        print("yesss")
         pantry_list = self.db.query(f"SELECT * FROM pantry where user_id={user_id}")
         weekly_list = self.db.query(f"SELECT * FROM weekly_meals where user_id={user_id}")
         ingredients_list = []
@@ -375,7 +376,8 @@ class Groceries(Resource):
             menu_list.append(str(x[1]))
         #for error handling
         if(menu_list==[]):
-            return ""
+            print("ye")
+            return []
         data_ingredients = self.db.query(f"select ingredients_name, sum(quantity) from ingredients where menu_id in ({', '.join(menu_list)}) group by ingredients_name;")
         # for x in weekly_list:
         #     data_ingredients = self.db.query(f"SELECT * FROM ingredients where menu_id={x[1]}")
