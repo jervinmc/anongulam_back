@@ -96,7 +96,32 @@ class Usermanagement(Resource):
                 self.db.insert(f"UPDATE users set health_condition='{data.get('health_condition')}',isany='no',isketo='no',isvegetarian='no',ispaleo='no',ispescatarian='yes',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             if(data.get('category')=='no pork'):
                 self.db.insert(f"UPDATE users set health_condition='{data.get('health_condition')}',isany='no',isketo='no',isvegetarian='no',ispaleo='no',isnopork='yes',ispescatarian='yes',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+            diettype = data.get('category')
+            self.db.insert(f"delete from weekly_meals where user_id={pk}")
+            setWeeklyMeals(pk,diettype,'breakfast')
+            setWeeklyMeals(pk,diettype,'lunch')
+            setWeeklyMeals(pk,diettype,'dinner')
+            setWeeklyMeals(pk,diettype,'breakfast')
+            setWeeklyMeals(pk,diettype,'lunch')
+            setWeeklyMeals(pk,diettype,'dinner')
+            setWeeklyMeals(pk,diettype,'breakfast')
+            setWeeklyMeals(pk,diettype,'lunch')
+            setWeeklyMeals(pk,diettype,'dinner')
+            setWeeklyMeals(pk,diettype,'breakfast')
+            setWeeklyMeals(pk,diettype,'lunch')
+            setWeeklyMeals(pk,diettype,'dinner')
+            setWeeklyMeals(pk,diettype,'breakfast')
+            setWeeklyMeals(pk,diettype,'lunch')
+            setWeeklyMeals(pk,diettype,'dinner')
+            setWeeklyMeals(pk,diettype,'breakfast')
+            setWeeklyMeals(pk,diettype,'lunch')
+            setWeeklyMeals(pk,diettype,'dinner')
+            setWeeklyMeals(pk,diettype,'breakfast')
+            setWeeklyMeals(pk,diettype,'lunch')
+            setWeeklyMeals(pk,diettype,'dinner')
             return {"status":"Success"}
+        
+        
         except Exception as e:
             return {"status":"Failed"}
 
