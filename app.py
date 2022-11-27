@@ -95,7 +95,7 @@ class Usermanagement(Resource):
             if(data.get('category')=='pescatarian'):
                 self.db.insert(f"UPDATE users set health_condition='{data.get('health_condition')}',isany='no',isketo='no',isvegetarian='no',ispaleo='no',ispescatarian='yes',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             if(data.get('category')=='no pork'):
-                self.db.insert(f"UPDATE users set health_condition='{data.get('health_condition')}',isany='no',isketo='no',isvegetarian='no',ispaleo='no',isnopork='yes',ispescatarian='yes',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
+                self.db.insert(f"UPDATE users set health_condition='{data.get('health_condition')}',isany='no',isketo='no',isvegetarian='no',ispaleo='no',isnopork='yes',ispescatarian='no',email='{data.get('email')}',fullname='{data.get('fullname')}' where id={pk}")
             diettype = data.get('category')
             self.db.insert(f"delete from weekly_meals where user_id={pk}")
             setWeeklyMeals(pk,diettype,'breakfast')
@@ -278,8 +278,9 @@ class MenuList(Resource):
                 print(x)
                 self.db.insert(f"INSERT INTO recipe values(default,{id},'{x}')")
             counter = 0
+            print(data)
             for x in data.get('ingredients'):
-                self.db.insert(f"INSERT INTO ingredients values(default,{id},'{x}',1,'{data.get('sizelabel')[counter]}')")
+                self.db.insert(f"INSERT INTO ingredients values(default,{id},'{x}',{data.get('quantity')[counter]},'{data.get('sizelabel')[counter]}')")
                 counter= +1
 
             return {"data":id}
