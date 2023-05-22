@@ -570,8 +570,8 @@ class Upload(Resource):
         file_path=os.path.join('', imageFile.filename) # path where file can be saved
         imageFile.save(file_path)
         client = boto3.client('s3',aws_access_key_id=config("AWS_ACCESS_ID"),aws_secret_access_key=config("AWS_SECRET_ID"))
-        client.upload_file(f'{imageFile.filename}','bms-store-1',f'{imageFile.filename}')
-        self.db.insert(f"UPDATE menu_list set image='https://bms-store-1.s3.ap-southeast-1.amazonaws.com/uploads/{imageFile.filename}' where id={pk} ")
+        client.upload_file(f'{imageFile.filename}','chatmind',f'{imageFile.filename}')
+        self.db.insert(f"UPDATE menu_list set image='https://chatmind.s3.ap-southeast-1.amazonaws.com/uploads/{imageFile.filename}' where id={pk} ")
         return {"status":"Successful"}
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
